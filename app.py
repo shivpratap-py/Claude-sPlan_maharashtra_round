@@ -19,7 +19,7 @@ if PROJECT_ROOT not in sys.path:
 
 # Page config must be first Streamlit command
 st.set_page_config(
-    page_title="TrustLayer",
+    page_title="TrustLayer | AI investigator",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -27,144 +27,8 @@ st.set_page_config(
 
 # ─── Custom CSS for dark forensics theme ───────────────────────────────────────
 
-st.markdown("""
-<style>
-    /* Main theme */
-    .stApp {
-        background-color: #0a0e17;
-    }
-    
-    /* Header styling */
-    .main-header {
-        background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
-        border: 1px solid #1e3a5f;
-        border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
-    .main-header h1 {
-        color: #e0e7ff;
-        font-size: 2.5rem;
-        margin: 0;
-        letter-spacing: 2px;
-    }
-    .main-header p {
-        color: #8899aa;
-        font-size: 1.1rem;
-        margin-top: 0.5rem;
-    }
-    
-    /* Cards */
-    .evidence-card {
-        background: #111827;
-        border: 1px solid #1f2937;
-        border-radius: 10px;
-        padding: 1.2rem;
-        margin-bottom: 1rem;
-    }
-    .evidence-card h4 {
-        color: #e0e7ff;
-        margin: 0 0 0.5rem 0;
-    }
-    
-    /* Assessment badges */
-    .assessment-authentic {
-        background: #064e3b;
-        color: #6ee7b7;
-        padding: 0.5rem 1.5rem;
-        border-radius: 20px;
-        font-weight: bold;
-        font-size: 1.3rem;
-        display: inline-block;
-        border: 1px solid #10b981;
-    }
-    .assessment-manipulated {
-        background: #78350f;
-        color: #fbbf24;
-        padding: 0.5rem 1.5rem;
-        border-radius: 20px;
-        font-weight: bold;
-        font-size: 1.3rem;
-        display: inline-block;
-        border: 1px solid #f59e0b;
-    }
-    .assessment-coordinated {
-        background: #7f1d1d;
-        color: #fca5a5;
-        padding: 0.5rem 1.5rem;
-        border-radius: 20px;
-        font-weight: bold;
-        font-size: 1.3rem;
-        display: inline-block;
-        border: 1px solid #ef4444;
-    }
-    .assessment-insufficient {
-        background: #1f2937;
-        color: #9ca3af;
-        padding: 0.5rem 1.5rem;
-        border-radius: 20px;
-        font-weight: bold;
-        font-size: 1.3rem;
-        display: inline-block;
-        border: 1px solid #6b7280;
-    }
-    
-    /* Confidence */
-    .confidence-high { color: #6ee7b7; }
-    .confidence-medium { color: #fbbf24; }
-    .confidence-low { color: #fca5a5; }
-    
-    /* Sidebar */
-    section[data-testid="stSidebar"] {
-        background-color: #0d1117;
-        border-right: 1px solid #1e3a5f;
-    }
-    
-    /* Metric cards */
-    .metric-card {
-        background: #111827;
-        border: 1px solid #1f2937;
-        border-radius: 8px;
-        padding: 1rem;
-        text-align: center;
-    }
-    .metric-value {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #e0e7ff;
-    }
-    .metric-label {
-        color: #6b7280;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* Disclaimer */
-    .disclaimer {
-        background: #1a1a2e;
-        border-left: 3px solid #4a5568;
-        padding: 0.8rem 1rem;
-        margin-top: 1rem;
-        border-radius: 0 6px 6px 0;
-        color: #8899aa;
-        font-size: 0.85rem;
-    }
-    
-    /* Hide Streamlit branding */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    
-    /* File uploader style */
-    .stFileUploader {
-        border: 1px dashed #1e3a5f;
-        border-radius: 10px;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-
+from theme import inject_theme, header_html, verdict_html, metric_html
+inject_theme()
 # ─── Lazy imports and initialization ───────────────────────────────────────────
 
 def import_analyzers():
@@ -576,13 +440,7 @@ def render_report_download(investigation_data: dict):
 
 def page_new_investigation():
     # Header
-    st.markdown(
-        '<div class="main-header">'
-        '<h1>🔍 TRUSTLAYER</h1>'
-        '<p>Multimodal Digital Authenticity &amp; Trust Investigation</p>'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown(header_html(), unsafe_allow_html=True)
     
     # Investigation claim
     st.markdown("### 📝 Investigation Claim")
@@ -868,15 +726,7 @@ def page_results():
     assessment_class = get_assessment_class(assessment)
     assessment_emoji = get_assessment_emoji(assessment)
     
-    st.markdown(
-        f'<div style="text-align:center; padding: 2rem; background: #111827; '
-        f'border-radius: 12px; border: 1px solid #1f2937; margin: 1rem 0;">'
-        f'<div class="{assessment_class}">{assessment_emoji} {assessment}</div>'
-        f'<p style="color: #e0e7ff; font-size: 1.5rem; margin-top: 1rem;">'
-        f'Confidence: <strong>{conf_value:.0f}%</strong> ({conf_level})</p>'
-        f'</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown(verdict_html(assessment, conf_value, conf_level), unsafe_allow_html=True)
     
     # ── Evidence summary metrics ──
     st.markdown("### 📊 Evidence Summary")
