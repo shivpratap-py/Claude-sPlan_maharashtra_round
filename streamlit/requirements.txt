@@ -1,0 +1,41 @@
+# TrustLayer - AI-Powered Digital Authenticity & Trust Investigation Platform
+# Install: pip install -r requirements.txt
+
+# Core
+streamlit>=1.30.0
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.35.0
+Pillow>=10.0.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Image analysis
+opencv-python-headless>=4.8.0
+exifread>=3.0.0
+
+# Audio analysis
+librosa>=0.10.0
+soundfile>=0.12.0
+pydub>=0.25.1
+openai-whisper>=20231117
+
+# Video - uses opencv + ffmpeg (system install)
+
+# NLP / Text
+spacy>=3.7.0
+sentence-transformers>=2.2.0
+
+# PDF
+PyPDF2>=3.0.0
+
+# Visualization
+plotly>=5.18.0
+networkx>=3.0
+matplotlib>=3.7.0
+
+# Report generation
+fpdf2>=2.7.0
+
+# Evaluation
+scikit-learn>=1.3.0
