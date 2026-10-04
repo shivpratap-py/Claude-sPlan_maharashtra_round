@@ -69,12 +69,7 @@ Start the Streamlit application:
 streamlit run app.py
 ```
 
-## Generating Demo Data
 
-To run the application with sample data during a presentation, generate the demo test cases:
-```bash
-python test_data/generate_demo_data.py
-```
 
 ## Limitations & Disclaimers
 **TrustLayer is an AI-assisted investigation system. Its output is an evidence-based assessment and should not be treated as definitive forensic proof.** 
