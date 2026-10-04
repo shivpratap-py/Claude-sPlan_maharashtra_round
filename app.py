@@ -19,16 +19,594 @@ if PROJECT_ROOT not in sys.path:
 
 # Page config must be first Streamlit command
 st.set_page_config(
-    page_title="TrustLayer | AI investigator",
+    page_title="TrustLayer",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ─── Custom CSS for dark forensics theme ───────────────────────────────────────
+st.markdown("""
+<style>
+/* =====================================================
+   TRUSTLAYER — REFERENCE-MATCHED THEME
+   ===================================================== */
 
-from theme import inject_theme, header_html, verdict_html, metric_html
-inject_theme()
+:root {
+    --background: #0b1020;
+    --sidebar: #111c31;
+    --panel: #111c32;
+    --panel-hover: #172442;
+    --border: #24385d;
+    --border-bright: #2c4c83;
+    --blue: #438bff;
+    --blue-light: #83a9ff;
+    --text: #edf2ff;
+    --muted: #91a8d5;
+    --subtle: #63789f;
+}
+
+/* Main application */
+
+.stApp {
+    background: var(--background);
+    color: var(--text);
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+[data-testid="stAppViewContainer"] {
+    background:
+        radial-gradient(
+            ellipse at 55% 0%,
+            rgba(28, 53, 99, 0.22),
+            transparent 55%
+        ),
+        var(--background);
+}
+
+.block-container {
+    max-width: 1400px;
+    padding-top: 2.7rem;
+    padding-bottom: 3rem;
+}
+
+/* Typography */
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text) !important;
+    font-weight: 650 !important;
+    letter-spacing: -0.4px;
+}
+
+p, label {
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+[data-testid="stCaptionContainer"] {
+    color: var(--subtle);
+}
+
+/* =====================================================
+   SIDEBAR
+   ===================================================== */
+
+section[data-testid="stSidebar"] {
+    background: linear-gradient(
+        180deg,
+        #131e33 0%,
+        #101a2d 100%
+    );
+
+    border-right: 1px solid #273957;
+    min-width: 290px;
+}
+
+section[data-testid="stSidebar"] > div {
+    padding: 1.2rem 1rem;
+}
+
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    color: var(--text) !important;
+}
+
+section[data-testid="stSidebar"] p {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+section[data-testid="stSidebar"] hr {
+    border-color: var(--border);
+    margin: 1.5rem 0;
+}
+
+/* Sidebar navigation hover */
+
+section[data-testid="stSidebar"] [data-testid="stRadio"] label {
+    border-radius: 8px;
+    padding: 0.55rem 0.65rem;
+    transition: background 0.18s ease;
+}
+
+section[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+    background: #1a2743;
+}
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.main-header {
+    background: linear-gradient(
+        115deg,
+        #111b30 0%,
+        #10182b 100%
+    );
+
+    border: 1px solid #1e3154;
+    border-radius: 15px;
+
+    padding: 1.5rem 1.5rem 1.2rem;
+    margin-bottom: 2rem;
+
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.main-header h1 {
+    color: #f2f5ff !important;
+    font-size: 2.6rem !important;
+    font-weight: 750 !important;
+    letter-spacing: -1px;
+    margin-top: 1rem;
+    margin-bottom: 0.7rem;
+}
+
+.main-header p {
+    color: #94acd9;
+    font-size: 1rem;
+    max-width: 750px;
+}
+
+/* Optional header badge */
+
+.header-badge {
+    display: inline-block;
+
+    background: #192746;
+    border: 1px solid #314e85;
+    border-radius: 999px;
+
+    color: #76a2ff;
+    padding: 0.4rem 0.85rem;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+}
+
+/* =====================================================
+   EVIDENCE CARDS
+   ===================================================== */
+
+.evidence-card {
+    background: var(--panel);
+    border: 1px solid #233657;
+    border-radius: 13px;
+
+    padding: 1.1rem;
+    margin-bottom: 1rem;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.evidence-card:hover {
+    background: var(--panel-hover);
+    border-color: var(--border-bright);
+}
+
+.evidence-card h4 {
+    color: var(--text) !important;
+    margin-bottom: 0.6rem;
+}
+
+.evidence-card p {
+    color: var(--muted);
+    font-size: 0.87rem;
+}
+
+/* =====================================================
+   METRIC CARDS
+   ===================================================== */
+
+.metric-card {
+    background: var(--panel);
+    border: 1px solid #243657;
+    border-radius: 12px;
+
+    padding: 1.2rem;
+    text-align: center;
+}
+
+.metric-value {
+    color: var(--text);
+    font-size: 2rem;
+    font-weight: 750;
+}
+
+.metric-label {
+    color: var(--subtle);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* =====================================================
+   CLAIM INPUT
+   ===================================================== */
+
+div[data-testid="stTextArea"] textarea,
+div[data-testid="stTextInput"] input {
+    background: #121d32 !important;
+    color: #dce6ff !important;
+
+    border: 1px solid #293d61 !important;
+    border-radius: 10px !important;
+
+    padding: 0.85rem 1rem;
+
+    font-size: 0.95rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+div[data-testid="stTextArea"] textarea:focus,
+div[data-testid="stTextInput"] input:focus {
+    border-color: #3d6bb2 !important;
+    box-shadow: 0 0 0 1px rgba(67, 139, 255, 0.2);
+}
+
+div[data-testid="stTextArea"] textarea::placeholder,
+div[data-testid="stTextInput"] input::placeholder {
+    color: #7185aa !important;
+}
+
+/* =====================================================
+   UPLOAD PANELS
+   ===================================================== */
+
+[data-testid="stFileUploader"] {
+    background: transparent;
+}
+
+[data-testid="stFileUploaderDropzone"] {
+    background: linear-gradient(
+        145deg,
+        #121e34,
+        #111b30
+    ) !important;
+
+    border: 1px dashed #31518a !important;
+    border-radius: 13px !important;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+[data-testid="stFileUploaderDropzone"]:hover {
+    background: #172540 !important;
+    border-color: #5789e8 !important;
+}
+
+[data-testid="stFileUploaderDropzone"] button {
+    background: #111c31 !important;
+    color: #e1eaff !important;
+
+    border: 1px solid #2b4167 !important;
+    border-radius: 8px !important;
+
+    font-weight: 500;
+}
+
+[data-testid="stFileUploaderDropzone"] button:hover {
+    background: #1b2a47 !important;
+    border-color: #5486df !important;
+}
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+
+.stButton > button,
+.stDownloadButton > button {
+    background: #16233c;
+    color: #e6edff;
+
+    border: 1px solid #2b4167;
+    border-radius: 8px;
+
+    padding: 0.55rem 1rem;
+    font-weight: 600;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    background: #203253;
+    color: #ffffff;
+
+    border-color: #4a79c8;
+}
+
+.stButton > button:focus,
+.stDownloadButton > button:focus {
+    box-shadow: 0 0 0 2px rgba(67, 139, 255, 0.2);
+}
+
+/* =====================================================
+   SELECTBOXES
+   ===================================================== */
+
+[data-baseweb="select"] > div {
+    background: #121d32;
+    border-color: #293d61;
+    border-radius: 8px;
+    color: var(--text);
+}
+
+/* =====================================================
+   TABS
+   ===================================================== */
+
+.stTabs [data-baseweb="tab-list"] {
+    gap: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.stTabs [data-baseweb="tab"] {
+    background: transparent;
+    color: var(--muted);
+    padding: 0.7rem 0.3rem;
+}
+
+.stTabs [aria-selected="true"] {
+    color: #83a9ff !important;
+    border-bottom-color: #6e98ff !important;
+}
+
+/* =====================================================
+   EXPANDERS
+   ===================================================== */
+
+[data-testid="stExpander"] {
+    background: var(--panel);
+    border: 1px solid #243657;
+    border-radius: 11px;
+    overflow: hidden;
+}
+
+[data-testid="stExpander"] summary {
+    color: var(--text);
+}
+
+/* =====================================================
+   STREAMLIT METRICS
+   ===================================================== */
+
+[data-testid="stMetric"] {
+    background: var(--panel);
+    border: 1px solid #243657;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+[data-testid="stMetricLabel"] {
+    color: var(--muted);
+}
+
+[data-testid="stMetricValue"] {
+    color: var(--text);
+}
+
+/* =====================================================
+   ASSESSMENT BADGES
+   ===================================================== */
+
+.assessment-authentic {
+    background: #12382e;
+    color: #73dfb0;
+    border: 1px solid #28694f;
+    border-radius: 8px;
+    padding: 0.5rem 1.1rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.assessment-concerns {
+    background: #3a321c;
+    color: #f4d477;
+    border: 1px solid #74602c;
+    border-radius: 8px;
+    padding: 0.5rem 1.1rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.assessment-manipulated {
+    background: #44301e;
+    color: #ffbd78;
+    border: 1px solid #82552e;
+    border-radius: 8px;
+    padding: 0.5rem 1.1rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.assessment-coordinated {
+    background: #41232c;
+    color: #ff969e;
+    border: 1px solid #7a3945;
+    border-radius: 8px;
+    padding: 0.5rem 1.1rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.assessment-insufficient {
+    background: #202b40;
+    color: #a9b7d0;
+    border: 1px solid #394963;
+    border-radius: 8px;
+    padding: 0.5rem 1.1rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+/* =====================================================
+   CONFIDENCE
+   ===================================================== */
+
+.confidence-high {
+    color: #73dfb0;
+    font-weight: 650;
+}
+
+.confidence-medium {
+    color: #f4d477;
+    font-weight: 650;
+}
+
+.confidence-low {
+    color: #ff969e;
+    font-weight: 650;
+}
+
+/* =====================================================
+   DISCLAIMER
+   ===================================================== */
+
+.disclaimer {
+    background: #15213a;
+    border-left: 3px solid #6795ff;
+    border-radius: 0 9px 9px 0;
+
+    padding: 0.9rem 1rem;
+    margin-top: 1rem;
+
+    color: #94acd9;
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+/* =====================================================
+   DIVIDERS
+   ===================================================== */
+
+hr {
+    border: none;
+    border-top: 1px solid #263653;
+    margin: 1.7rem 0;
+}
+
+/* =====================================================
+   ALERTS AND CODE
+   ===================================================== */
+
+[data-testid="stAlert"] {
+    border-radius: 9px;
+}
+
+[data-testid="stCode"] {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* =====================================================
+   SCROLLBAR
+   ===================================================== */
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #101827;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #35476a;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #526b99;
+}
+
+/* =====================================================
+   HIDE STREAMLIT BRANDING
+   ===================================================== */
+
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN
+   ===================================================== */
+
+@media (max-width: 768px) {
+    .block-container {
+        padding: 1.2rem 1rem 2rem;
+    }
+
+    .main-header {
+        padding: 1.2rem;
+        border-radius: 12px;
+    }
+
+    .main-header h1 {
+        font-size: 2rem !important;
+    }
+
+    section[data-testid="stSidebar"] {
+        min-width: auto;
+    }
+
+    .metric-value {
+        font-size: 1.6rem;
+    }
+}
+
+/* =====================================================
+   ACCESSIBILITY
+   ===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 # ─── Lazy imports and initialization ───────────────────────────────────────────
 
 def import_analyzers():
@@ -71,6 +649,8 @@ if 'current_page' not in st.session_state:
     st.session_state.current_page = 'New Investigation'
 if 'analysis_complete' not in st.session_state:
     st.session_state.analysis_complete = False
+if 'eval_results' not in st.session_state:
+    st.session_state.eval_results = None
 
 
 # ─── Sidebar ───────────────────────────────────────────────────────────────────
@@ -99,27 +679,16 @@ with st.sidebar:
         unsafe_allow_html=True
     )
     st.markdown("---")
-    st.caption("v1.0 — Hackathon Prototype")
+    st.caption("v1.1 — Hackathon Prototype")
 
 
 # ─── Helper functions ──────────────────────────────────────────────────────────
-
-def apply_plotly_dark_theme(fig):
-    """Apply matching dark background, font, and grid colors to Plotly figures."""
-    fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#e8ecf8', family='Plus Jakarta Sans, sans-serif'),
-        margin=dict(l=20, r=20, t=35, b=20),
-        xaxis=dict(gridcolor='#26314d', zerolinecolor='#26314d'),
-        yaxis=dict(gridcolor='#26314d', zerolinecolor='#26314d')
-    )
-    return fig
 
 def get_assessment_class(assessment: str) -> str:
     """Return CSS class for assessment badge."""
     mapping = {
         'AUTHENTIC': 'assessment-authentic',
+        'AUTHENTIC_WITH_CONCERNS': 'assessment-concerns',
         'MANIPULATED': 'assessment-manipulated',
         'COORDINATED SYNTHETIC': 'assessment-coordinated',
         'INSUFFICIENT EVIDENCE': 'assessment-insufficient',
@@ -130,6 +699,7 @@ def get_assessment_class(assessment: str) -> str:
 def get_assessment_emoji(assessment: str) -> str:
     mapping = {
         'AUTHENTIC': '🟢',
+        'AUTHENTIC_WITH_CONCERNS': '🟡',
         'MANIPULATED': '🟠',
         'COORDINATED SYNTHETIC': '🔴',
         'INSUFFICIENT EVIDENCE': '⚪',
@@ -452,7 +1022,13 @@ def render_report_download(investigation_data: dict):
 
 def page_new_investigation():
     # Header
-    st.markdown(header_html(), unsafe_allow_html=True)
+    st.markdown(
+        '<div class="main-header">'
+        '<h1>🔍 TRUSTLAYER</h1>'
+        '<p>Multimodal Digital Authenticity &amp; Trust Investigation</p>'
+        '</div>',
+        unsafe_allow_html=True
+    )
     
     # Investigation claim
     st.markdown("### 📝 Investigation Claim")
@@ -738,7 +1314,15 @@ def page_results():
     assessment_class = get_assessment_class(assessment)
     assessment_emoji = get_assessment_emoji(assessment)
     
-    st.markdown(verdict_html(assessment, conf_value, conf_level), unsafe_allow_html=True)
+    st.markdown(
+        f'<div style="text-align:center; padding: 2rem; background: #111827; '
+        f'border-radius: 12px; border: 1px solid #1f2937; margin: 1rem 0;">'
+        f'<div class="{assessment_class}">{assessment_emoji} {assessment}</div>'
+        f'<p style="color: #e0e7ff; font-size: 1.5rem; margin-top: 1rem;">'
+        f'Confidence: <strong>{conf_value:.0f}%</strong> ({conf_level})</p>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
     
     # ── Evidence summary metrics ──
     st.markdown("### 📊 Evidence Summary")
@@ -775,7 +1359,6 @@ def page_results():
         from utils.visualization import create_evidence_graph, create_confidence_gauge, create_evidence_summary_chart
         
         fig = create_evidence_graph(evidence, consistency)
-        fig = apply_plotly_dark_theme(fig)  # <--- Apply dark theme here
         st.plotly_chart(fig, use_container_width=True)
     except Exception as e:
         st.caption(f"Evidence graph unavailable: {e}")
@@ -796,7 +1379,6 @@ def page_results():
         )
     
     # ── Confidence gauge ──
-    # ── Confidence gauge ──
     st.markdown("---")
     st.markdown("### 📈 Confidence & Completeness")
     
@@ -804,7 +1386,6 @@ def page_results():
     with col1:
         try:
             gauge_fig = create_confidence_gauge(conf_value, "Investigation Confidence")
-            gauge_fig = apply_plotly_dark_theme(gauge_fig)  # <--- Apply dark theme here
             st.plotly_chart(gauge_fig, use_container_width=True)
         except Exception:
             st.metric("Confidence", f"{conf_value:.0f}%")
@@ -813,7 +1394,6 @@ def page_results():
         completeness = confidence.get('evidence_completeness', 0)
         try:
             gauge_fig = create_confidence_gauge(completeness, "Evidence Completeness")
-            gauge_fig = apply_plotly_dark_theme(gauge_fig)  # <--- Apply dark theme here
             st.plotly_chart(gauge_fig, use_container_width=True)
         except Exception:
             st.metric("Evidence Completeness", f"{completeness:.0f}%")
@@ -929,7 +1509,7 @@ def page_evaluation():
             st.session_state.eval_results = eval_results
         
         # Display results if available
-        if 'eval_results' in st.session_state:
+        if st.session_state.get('eval_results'):
             eval_results = st.session_state.eval_results
             
             st.markdown("### Results")
@@ -961,7 +1541,6 @@ def page_evaluation():
                 )
             
             # Confusion matrix
-            # Confusion matrix
             st.markdown("### Confusion Matrix")
             try:
                 from evaluation.metrics import MetricsCalculator
@@ -970,7 +1549,6 @@ def page_evaluation():
                 labels = metrics.get('labels', MetricsCalculator.ASSESSMENT_LABELS)
                 if cm:
                     fig = mc.create_confusion_matrix_figure(cm, labels)
-                    fig = apply_plotly_dark_theme(fig)  # <--- Apply dark theme here
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.caption(f"Confusion matrix visualization unavailable: {e}")
