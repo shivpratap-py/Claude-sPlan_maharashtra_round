@@ -104,6 +104,18 @@ with st.sidebar:
 
 # ─── Helper functions ──────────────────────────────────────────────────────────
 
+def apply_plotly_dark_theme(fig):
+    """Apply matching dark background, font, and grid colors to Plotly figures."""
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#e8ecf8', family='Plus Jakarta Sans, sans-serif'),
+        margin=dict(l=20, r=20, t=35, b=20),
+        xaxis=dict(gridcolor='#26314d', zerolinecolor='#26314d'),
+        yaxis=dict(gridcolor='#26314d', zerolinecolor='#26314d')
+    )
+    return fig
+
 def get_assessment_class(assessment: str) -> str:
     """Return CSS class for assessment badge."""
     mapping = {
@@ -763,6 +775,7 @@ def page_results():
         from utils.visualization import create_evidence_graph, create_confidence_gauge, create_evidence_summary_chart
         
         fig = create_evidence_graph(evidence, consistency)
+        fig = apply_plotly_dark_theme(fig)  # <--- Apply dark theme here
         st.plotly_chart(fig, use_container_width=True)
     except Exception as e:
         st.caption(f"Evidence graph unavailable: {e}")
@@ -783,6 +796,7 @@ def page_results():
         )
     
     # ── Confidence gauge ──
+    # ── Confidence gauge ──
     st.markdown("---")
     st.markdown("### 📈 Confidence & Completeness")
     
@@ -790,6 +804,7 @@ def page_results():
     with col1:
         try:
             gauge_fig = create_confidence_gauge(conf_value, "Investigation Confidence")
+            gauge_fig = apply_plotly_dark_theme(gauge_fig)  # <--- Apply dark theme here
             st.plotly_chart(gauge_fig, use_container_width=True)
         except Exception:
             st.metric("Confidence", f"{conf_value:.0f}%")
@@ -798,6 +813,7 @@ def page_results():
         completeness = confidence.get('evidence_completeness', 0)
         try:
             gauge_fig = create_confidence_gauge(completeness, "Evidence Completeness")
+            gauge_fig = apply_plotly_dark_theme(gauge_fig)  # <--- Apply dark theme here
             st.plotly_chart(gauge_fig, use_container_width=True)
         except Exception:
             st.metric("Evidence Completeness", f"{completeness:.0f}%")
@@ -945,6 +961,7 @@ def page_evaluation():
                 )
             
             # Confusion matrix
+            # Confusion matrix
             st.markdown("### Confusion Matrix")
             try:
                 from evaluation.metrics import MetricsCalculator
@@ -953,6 +970,7 @@ def page_evaluation():
                 labels = metrics.get('labels', MetricsCalculator.ASSESSMENT_LABELS)
                 if cm:
                     fig = mc.create_confusion_matrix_figure(cm, labels)
+                    fig = apply_plotly_dark_theme(fig)  # <--- Apply dark theme here
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.caption(f"Confusion matrix visualization unavailable: {e}")
